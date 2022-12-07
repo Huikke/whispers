@@ -12,6 +12,8 @@ import fi.utu.tech.telephonegame.network.Resolver.NetworkType;
 import fi.utu.tech.telephonegame.network.Resolver.PeerConfiguration;
 import fi.utu.tech.telephonegame.util.ConcurrentExpiringHashSet;
 
+import java.util.ArrayList;
+
 public class MessageBroker extends Thread {
 
 	/*
@@ -35,18 +37,48 @@ public class MessageBroker extends Thread {
 		procQueue = network.getInputQueue();
 	}
 
-	/*
+	/* --- DONE ---
 	 * In the the process method you need to:
-	 * 1. Test the type of the incoming object
-	 * 2. Keep track of messages that are alredy processed by this node
-	 * 3. Show the incoming message in the received message text area
-	 * 4. Change the text and the color using the Refiner class
+	 * 1. Test the type of the incoming object							
+	 * 2. Keep track of messages that are alredy processed by this node	
+	 * 3. Show the incoming message in the received message text area	
+	 * 4. Change the text and the color using the Refiner class			
 	 * 5. Set the new color to the color area
 	 * 6. Show the refined message in the refined message text area
-	 * 7. Return the processed message
+	 * 7. Return the processed message									
 	 */
+	private ArrayList<UUID> seenUUIDs = new ArrayList<>();
 	private Message process(Object procMessage) {
-		return null;
+		// 1. returns null if procMessage is not a Message-object.
+		if (!(procMessage instanceof Message)) {
+			return null;
+		}
+		Message msg = (Message) procMessage;
+		
+		// 2. returns null if msg has already been handled.
+		if (seenUUIDs.contains(msg.getId())){
+			return null;
+		}
+		seenUUIDs.add(msg.getId());
+
+		// 3. Shows the incoming message in the received message text area.
+		this.gui_io.setReceivedMessage(msg.getMessage());
+
+		// 4. Changes the text and color.
+		String newText = Refiner.refineText(msg.getMessage());
+		int newColor = Refiner.refineColor(msg.getColor());
+
+		msg.setMessage(newText);
+		msg.setColor(newColor);
+
+		// 5. Sets the new color to the color area.
+		this.gui_io.setSignal(newColor);
+
+		// 6. Shows the refined message in the refined message text area.
+		this.gui_io.setRefinedMessage(newText);
+
+		// 7. Returns the processed message.
+		return msg;
 	}
 
 	/*
