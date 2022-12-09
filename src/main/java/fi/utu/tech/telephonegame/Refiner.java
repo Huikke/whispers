@@ -3,6 +3,9 @@ package fi.utu.tech.telephonegame;
 import java.util.Random;
 import fi.utu.tech.telephonegame.util.Words;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class Refiner {
 
 	/*
@@ -50,11 +53,31 @@ public class Refiner {
 		String outText = inText;
 
 		// Change the content of the message here.
-		outText = outText + " " +
+		
+		//
+		ArrayList<String> inWords = new ArrayList<> (Arrays.asList(inText.split(" ")));
+		
+		//otetaan alkukirjain pois jostain satunnaisesta sanasta
+		int shorteningIndex = rnd.nextInt(inWords.size());
+		inWords.set(shorteningIndex,inWords.get(shorteningIndex).substring(1));
+		
+		//liikutetaan jokin satunnainen sana johonkin satunnaiseen paikkaan
+		int fromIndex = rnd.nextInt(inWords.size());
+		int toIndex = rnd.nextInt(inWords.size());
+		String from = inWords.remove(fromIndex);
+		inWords.add(toIndex,from);
+		
+		//duplikoidaan joku satunnainen sana
+		int duplicationIndex = rnd.nextInt(inWords.size());
+		inWords.add(duplicationIndex,inWords.get(duplicationIndex));
+		
+		outText = inWords.toString();
+		
+		/*outText = outText + " " +
 				conjunctions[rnd.nextInt(conjunctions.length)] + " " +
 				subjects[rnd.nextInt(subjects.length)] + " " +
 				predicates[rnd.nextInt(predicates.length)]+ " " +
-				objects[rnd.nextInt(objects.length)];
+				objects[rnd.nextInt(objects.length)];*/
 
 		return outText;
 	}
