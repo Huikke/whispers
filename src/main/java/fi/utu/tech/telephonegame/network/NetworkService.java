@@ -2,6 +2,8 @@ package fi.utu.tech.telephonegame.network;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TimeUnit;
@@ -34,8 +36,11 @@ public class NetworkService extends Thread implements Network {
 	 */
 	public void startListening(int serverPort) {
 		System.out.printf("I should start listening for peers at port %d%n", serverPort);
-		// TODO
+		Listener listener = new Listener(serverPort);
+		Thread listenerThread = new Thread(listener);
+		listenerThread.start();
 	}
+
 
 	/**
 	 * This method will be called when connecting to a peer (other broken telephone
@@ -47,7 +52,9 @@ public class NetworkService extends Thread implements Network {
 	 */
 	public void connect(String peerIP, int peerPort) throws IOException, UnknownHostException {
 		System.out.printf("I should connect myself to %s, port %d%n", peerIP, peerPort);
-		// TODO
+		try (Socket socket = new Socket(peerIP, peerPort)) {
+			System.out.printf("Connection established to %s, port %d%n", peerIP, peerPort);
+		}
 	}
 
 	/**
