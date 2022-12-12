@@ -1,5 +1,10 @@
 package fi.utu.tech.telephonegame.network;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 //import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.LinkedTransferQueue;
@@ -13,31 +18,35 @@ import fi.utu.tech.telephonegame.Message;
  */
 public class IncomingFeed implements Runnable {
 	
-	Socket socket;
-	private TransferQueue<Object> inQueue = new LinkedTransferQueue<Object>();
+	private String peerIP;
+	private int peerPort;
+	private TransferQueue<Object> inQueue;
 	
-	public IncomingFeed(Socket s,TransferQueue<Object> i) {
-		this.socket = s;
-		this.inQueue = i;
+	public IncomingFeed(String peerIP, int peerPort,TransferQueue<Object> inQueue) {
+		this.peerIP = peerIP;
+		this.peerPort = peerPort;
+		this.inQueue = inQueue;
 	}
 	
 	@Override
 	public void run() {
-		Message message = null;
-		while (true) {
-			//kuuntele viestejä
-			//TODO
-			//varmaan pitää setuppaa joku sisääntuleva streami siihen yhdistettyyn vertaiseen
-			//ja sit toteuttaa se vastaava lähetys_streami siellä OutgoingFeed luokassa
+		// socketti yhdistää vertaiseen
+		try (Socket socket = new Socket(peerIP, peerPort)) {
+			System.out.printf("Connection established to %s, port %d%n", peerIP, peerPort);
+			ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());			
 			
-			//aina kun saadaan viesti, kirjoitetaan se inQueue:een
-			try {
+			while (true) {
+				//kuuntele viestejä
+				Message message = (Message) inStream.readObject();
+				//aina kun saadaan viesti, kirjoitetaan se inQueue:een
 				inQueue.offer(message, 1, TimeUnit.SECONDS);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
-
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		} catch (ClassNotFoundException e2) {
+			e2.printStackTrace();
 		}
 	}
-
 }

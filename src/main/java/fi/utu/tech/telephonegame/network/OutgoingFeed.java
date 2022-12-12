@@ -6,6 +6,13 @@ import java.util.concurrent.TransferQueue;
 
 import fi.utu.tech.telephonegame.Message;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Serializable;
 
 /*
@@ -14,9 +21,9 @@ import java.io.Serializable;
 public class OutgoingFeed implements Runnable {
 	
 	Socket socket;
-	private TransferQueue<Object> outQueue;
+	private TransferQueue<Serializable> outQueue;
 	
-	public OutgoingFeed(Socket s,TransferQueue<Object> o) {
+	public OutgoingFeed(Socket s,TransferQueue<Serializable> o) {
 		this.socket = s;
 		this.outQueue = o;
 	}
@@ -33,9 +40,14 @@ public class OutgoingFeed implements Runnable {
 		}
 	}
 	
-	public void send(Serializable out) {
+	public void send(Serializable message) {
 		//lähetä viesti
-		//TODO
+		try {
+			ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
+			outStream.writeObject(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

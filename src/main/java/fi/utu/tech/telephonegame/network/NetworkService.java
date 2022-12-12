@@ -2,7 +2,6 @@ package fi.utu.tech.telephonegame.network;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.LinkedTransferQueue;
@@ -36,7 +35,8 @@ public class NetworkService extends Thread implements Network {
 	 */
 	public void startListening(int serverPort) {
 		System.out.printf("I should start listening for peers at port %d%n", serverPort);
-		listener = new Listener(serverPort);
+		// tekee säikeen kuunteleman vertaisten yhteydenottoa
+		listener = new Listener(serverPort, outQueue);
 		Thread listenerThread = new Thread(listener);
 		listenerThread.start();
 	}
@@ -52,15 +52,11 @@ public class NetworkService extends Thread implements Network {
 	 */
 	public void connect(String peerIP, int peerPort) throws IOException, UnknownHostException {
 		System.out.printf("I should connect myself to %s, port %d%n", peerIP, peerPort);
-		try (Socket socket = new Socket(peerIP, peerPort)) {
-			System.out.printf("Connection established to %s, port %d%n", peerIP, peerPort);
-			
 			//tehdään säie joka vastaanottaa tulevia viestejä
-			IncomingFeed feed = new IncomingFeed(socket,inQueue);
+			IncomingFeed feed = new IncomingFeed(peerIP, peerPort, inQueue);
 			Thread feedThread = new Thread(feed);
 			feedThread.setDaemon(true);
 			feedThread.start();
-		}
 	}
 
 	/**

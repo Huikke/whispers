@@ -3,7 +3,7 @@ package fi.utu.tech.telephonegame.network;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-
+import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TransferQueue;
 import java.io.Serializable;
@@ -12,14 +12,16 @@ public class Listener implements Runnable {
 	int serverPort;
 	
 	//aloitetut yhteys_säikeet kuuntelevat tätä 
-	private TransferQueue<Object> outQueue;
+	private TransferQueue<Serializable> outQueue;
 	
-	public Listener(int serverPort) {
+	public Listener(int serverPort, TransferQueue<Serializable> outQueue) {
 		this.serverPort = serverPort;
+		this.outQueue = outQueue;
 	}
 	
 	@Override
 	public void run() {
+		// serversocketti kuuntelee vertaisia
 		try (ServerSocket serverSocket = new ServerSocket(serverPort)) {
 			while (true) {
 				Socket socket = serverSocket.accept();
