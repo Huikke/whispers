@@ -93,7 +93,23 @@ public class MessageBroker extends Thread {
 	 * 
 	 */
 	public void run() {
-
+		Message message = null;
+		
+		//procQueue:ssa on tulevat viestit, joten meidän pitää kuunnella sitä
+		while (true) {
+			
+			try {
+				//otetaan viesti
+				message = (Message) procQueue.take();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			//prosessoidaan
+			message = process(message);
+			//lähetetään
+			send(message);
+		}
 	}
 
 	/**

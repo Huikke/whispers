@@ -17,15 +17,15 @@ public class NetworkService extends Thread implements Network {
 	private TransferQueue<Object> inQueue = new LinkedTransferQueue<Object>(); // For messages incoming from network
 	private TransferQueue<Serializable> outQueue = new LinkedTransferQueue<Serializable>(); // For messages outgoing to network
 
-
+	//säilytetään viittaus Listeneriin
+	Listener listener;
+	
 	/*
 	 * No need to change the construtor
 	 */
 	public NetworkService() {
 		this.start();
 	}
-
-
 
 	/**
 	 * Creates a server instance and starts listening for new peers on specified port
@@ -36,7 +36,7 @@ public class NetworkService extends Thread implements Network {
 	 */
 	public void startListening(int serverPort) {
 		System.out.printf("I should start listening for peers at port %d%n", serverPort);
-		Listener listener = new Listener(serverPort);
+		listener = new Listener(serverPort);
 		Thread listenerThread = new Thread(listener);
 		listenerThread.start();
 	}
@@ -54,6 +54,12 @@ public class NetworkService extends Thread implements Network {
 		System.out.printf("I should connect myself to %s, port %d%n", peerIP, peerPort);
 		try (Socket socket = new Socket(peerIP, peerPort)) {
 			System.out.printf("Connection established to %s, port %d%n", peerIP, peerPort);
+			
+			//tehdään säie joka vastaanottaa tulevia viestejä
+			IncomingFeed feed = new IncomingFeed(socket,inQueue);
+			Thread feedThread = new Thread(feed);
+			feedThread.setDaemon(true);
+			feedThread.start();
 		}
 	}
 
@@ -65,7 +71,8 @@ public class NetworkService extends Thread implements Network {
 	 */
 	private void send(Serializable out) {
 		// Send the object to all neighbouring nodes
-		// TODO
+		//annetaan viesti Listenerille
+		listener.send(out);	
 	}
 
 	/*
