@@ -12,7 +12,6 @@ import fi.utu.tech.telephonegame.network.Resolver.NetworkType;
 import fi.utu.tech.telephonegame.network.Resolver.PeerConfiguration;
 import fi.utu.tech.telephonegame.util.ConcurrentExpiringHashSet;
 
-import java.util.ArrayList;
 
 public class MessageBroker extends Thread {
 
@@ -47,7 +46,7 @@ public class MessageBroker extends Thread {
 	 * 6. Show the refined message in the refined message text area
 	 * 7. Return the processed message									
 	 */
-	private ArrayList<UUID> seenUUIDs = new ArrayList<>();
+
 	private Message process(Object procMessage) {
 		// 1. returns null if procMessage is not a Message-object.
 		if (!(procMessage instanceof Message)) {
@@ -56,10 +55,10 @@ public class MessageBroker extends Thread {
 		Message msg = (Message) procMessage;
 		
 		// 2. returns null if msg has already been handled.
-		if (seenUUIDs.contains(msg.getId())){
+		if (prevMessages.containsKey(msg.getId())){
 			return null;
 		}
-		seenUUIDs.add(msg.getId());
+		prevMessages.put(msg.getId());
 
 		// 3. Shows the incoming message in the received message text area.
 		this.gui_io.setReceivedMessage(msg.getMessage());
