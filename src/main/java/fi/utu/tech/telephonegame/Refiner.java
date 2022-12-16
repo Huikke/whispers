@@ -64,14 +64,25 @@ public class Refiner {
 		//liikutetaan jokin satunnainen sana johonkin satunnaiseen paikkaan
 		int fromIndex = rnd.nextInt(inWords.size());
 		int toIndex = rnd.nextInt(inWords.size());
-		String from = inWords.remove(fromIndex);
-		inWords.add(toIndex,from);
+		String word = inWords.get(fromIndex);
+		if (toIndex >= fromIndex){
+			inWords.add(toIndex, word);
+			inWords.remove(fromIndex);
+		} else {
+			inWords.remove(fromIndex);
+			inWords.add(toIndex, word);
+		}
+		
 		
 		//duplikoidaan joku satunnainen sana
 		int duplicationIndex = rnd.nextInt(inWords.size());
 		inWords.add(duplicationIndex,inWords.get(duplicationIndex));
 		
 		outText = inWords.toString();
+
+		// poistetaan sulut ja ylimääräiset pilkut
+		outText = outText.substring(1, outText.length()-1);
+		outText = outText.replace(", ", " ");
 		
 		/*outText = outText + " " +
 				conjunctions[rnd.nextInt(conjunctions.length)] + " " +
