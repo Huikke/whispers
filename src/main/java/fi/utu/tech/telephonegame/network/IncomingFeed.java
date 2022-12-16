@@ -18,21 +18,19 @@ import fi.utu.tech.telephonegame.Message;
  */
 public class IncomingFeed implements Runnable {
 	
-	private String peerIP;
-	private int peerPort;
+	private Socket socket;
 	private TransferQueue<Object> inQueue;
 	
-	public IncomingFeed(String peerIP, int peerPort,TransferQueue<Object> inQueue) {
-		this.peerIP = peerIP;
-		this.peerPort = peerPort;
+	public IncomingFeed(Socket socket, TransferQueue<Object> inQueue) {
+		this.socket = socket;
 		this.inQueue = inQueue;
 	}
 	
 	@Override
 	public void run() {
 		// socketti yhdistää vertaiseen
-		try (Socket socket = new Socket(peerIP, peerPort)) {
-			System.out.printf("Connection established to %s, port %d%n", peerIP, peerPort);
+			//tästä tuli nyt hieman spagettia, mutta toivottavasti toimii
+		try {
 			ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());			
 			
 			while (true) {

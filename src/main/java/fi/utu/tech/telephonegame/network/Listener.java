@@ -13,10 +13,12 @@ public class Listener implements Runnable {
 	
 	//aloitetut yhteys_säikeet kuuntelevat tätä 
 	private TransferQueue<Serializable> outQueue;
+	private TransferQueue<Object> inQueue;
 	
-	public Listener(int serverPort, TransferQueue<Serializable> outQueue) {
+	public Listener(int serverPort, TransferQueue<Serializable> outQueue, TransferQueue<Object> inQueue) {
 		this.serverPort = serverPort;
 		this.outQueue = outQueue;
+		this.inQueue = inQueue;
 	}
 	
 	@Override
@@ -26,13 +28,18 @@ public class Listener implements Runnable {
 			while (true) {
 				Socket socket = serverSocket.accept();
 				System.out.println("A peer has successfully connected to me");
-				OutgoingFeed outFeed = new OutgoingFeed(socket,outQueue);
 				
-				//tehdään säie palvelemaan yhtä vertaista
+				// Säie lähetystä varten
+				OutgoingFeed outFeed = new OutgoingFeed(socket, outQueue);
 				Thread outFeedThread = new Thread(outFeed);
 				outFeedThread.setDaemon(true);
 				outFeedThread.start();
 				
+				// Säie kuuntelua varten
+				IncomingFeed feed = new IncomingFeed(socket, inQueue);
+				Thread feedThread = new Thread(feed);
+				feedThread.setDaemon(true);
+				feedThread.start();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
