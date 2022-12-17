@@ -106,8 +106,15 @@ public class MessageBroker extends Thread {
 			
 			//prosessoidaan
 			message = process(message);
-			//lähetetään
-			send(message);
+			
+			//testataanko onko viesti hyvä
+			if (message != null) {
+				
+				
+				//lähetetään
+				send(message);
+				
+			}
 		}
 	}
 
