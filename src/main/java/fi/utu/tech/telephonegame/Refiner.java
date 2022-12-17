@@ -58,8 +58,8 @@ public class Refiner {
 		ArrayList<String> inWords = new ArrayList<> (Arrays.asList(inText.split(" ")));
 		
 		//otetaan alkukirjain pois jostain satunnaisesta sanasta
-		int shorteningIndex = rnd.nextInt(inWords.size());
-		inWords.set(shorteningIndex,inWords.get(shorteningIndex).substring(1));
+		/*int shorteningIndex = rnd.nextInt(inWords.size());
+		inWords.set(shorteningIndex,inWords.get(shorteningIndex).substring(1));*/
 		
 		//liikutetaan jokin satunnainen sana johonkin satunnaiseen paikkaan
 		int fromIndex = rnd.nextInt(inWords.size());
