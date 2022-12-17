@@ -58,6 +58,7 @@ public class MessageBroker extends Thread {
 		if (prevMessages.containsKey(msg.getId())){
 			return null;
 		}
+		prevMessages.put(msg.getId());
 
 		// 3. Shows the incoming message in the received message text area.
 		this.gui_io.setReceivedMessage(msg.getMessage());
@@ -123,6 +124,7 @@ public class MessageBroker extends Thread {
 	 * @param message The Message object to be sent
 	 */
 	public void send(Message message) {
+		prevMessages.put(message.getId());
 		network.postMessage(message);
 	}
 
@@ -134,7 +136,6 @@ public class MessageBroker extends Thread {
 	 */
 	public void send(String text) {
 		Message message = new Message(text, 0);
-		prevMessages.put(message.getId());
 		this.send(message);
 	}
 
