@@ -78,6 +78,27 @@ public class Refiner {
 		int duplicationIndex = rnd.nextInt(inWords.size());
 		inWords.add(duplicationIndex,inWords.get(duplicationIndex));
 		
+		// lisätään joku satunnainen sana
+		int newWordIndex = rnd.nextInt(inWords.size());
+		int wordType = rnd.nextInt(3);
+		int randomIndex;
+		switch (wordType) {
+			case 0:
+				randomIndex = rnd.nextInt(subjects.length);
+				inWords.add(newWordIndex, subjects[randomIndex]);
+				break;
+			case 1:
+				randomIndex = rnd.nextInt(predicates.length);
+				inWords.add(newWordIndex, predicates[randomIndex]);
+				break;
+			case 2:
+				randomIndex = rnd.nextInt(objects.length);
+				inWords.add(newWordIndex, objects[randomIndex]);
+				break;
+			default:
+				break;
+		}
+		
 		outText = inWords.toString();
 
 		// poistetaan sulut ja ylimääräiset pilkut
