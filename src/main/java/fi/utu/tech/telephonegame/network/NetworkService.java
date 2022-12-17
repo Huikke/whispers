@@ -1,9 +1,11 @@
 package fi.utu.tech.telephonegame.network;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TransferQueue;
@@ -16,8 +18,8 @@ public class NetworkService extends Thread implements Network {
 	private TransferQueue<Object> inQueue = new LinkedTransferQueue<Object>(); // For messages incoming from network
 	private TransferQueue<Serializable> outQueue = new LinkedTransferQueue<Serializable>(); // For messages outgoing to network
 
-	//säilytetään viittaus Listeneriin
-	Listener listener;
+	// Lista outStreamia varten 
+	private ArrayList<ObjectOutputStream> outStreams = new ArrayList<>();
 	
 	/*
 	 * No need to change the construtor
@@ -36,7 +38,7 @@ public class NetworkService extends Thread implements Network {
 	public void startListening(int serverPort) {
 		System.out.printf("I should start listening for peers at port %d%n", serverPort);
 		// tekee säikeen kuunteleman vertaisten yhteydenottoa
-		listener = new Listener(serverPort, outQueue, inQueue);
+		Listener listener = new Listener(serverPort, this);
 		Thread listenerThread = new Thread(listener);
 		listenerThread.start();
 	}
@@ -56,17 +58,7 @@ public class NetworkService extends Thread implements Network {
 		Socket socket = new Socket(peerIP, peerPort);
 		System.out.printf("Connection established to %s, port %d%n", peerIP, peerPort);
 		
-		// Säie kuuntelua varten
-		IncomingFeed feed = new IncomingFeed(socket, inQueue);
-		Thread feedThread = new Thread(feed);
-		feedThread.setDaemon(true);
-		feedThread.start();
-		
-		// Säie lähetystä varten
-		OutgoingFeed outFeed = new OutgoingFeed(socket, outQueue);
-		Thread outFeedThread = new Thread(outFeed);
-		outFeedThread.setDaemon(true);
-		outFeedThread.start();
+		CommsStarter(socket);
 	}
 
 	/**
@@ -77,8 +69,29 @@ public class NetworkService extends Thread implements Network {
 	 */
 	private void send(Serializable out) {
 		// Send the object to all neighbouring nodes
-		//annetaan viesti Listenerille
-		listener.send(out);	
+		for (ObjectOutputStream outStream : outStreams) {
+			try {
+				outStream.writeObject(out);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Aloittaa kuuntelun säikeet ja lähetyksen metodit
+	 */
+	public void CommsStarter(Socket socket) throws IOException {
+		// Säie kuuntelua varten
+		IncomingFeed feed = new IncomingFeed(socket, inQueue);
+		Thread feedThread = new Thread(feed);
+		feedThread.setDaemon(true);
+		feedThread.start();
+		
+		// outStream lähetystä varten
+		ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
+		// listan lisäys
+		outStreams.add(outStream);
 	}
 
 	/*
@@ -123,5 +136,4 @@ public class NetworkService extends Thread implements Network {
 			}
 		}
 	}
-
 }
