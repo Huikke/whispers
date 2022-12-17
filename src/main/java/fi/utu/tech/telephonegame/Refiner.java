@@ -105,11 +105,12 @@ public class Refiner {
 		outText = outText.substring(1, outText.length()-1);
 		outText = outText.replace(", ", " ");
 		
-		/*outText = outText + " " +
+		// lisätään sanoja perään
+		outText = outText + " " +
 				conjunctions[rnd.nextInt(conjunctions.length)] + " " +
 				subjects[rnd.nextInt(subjects.length)] + " " +
 				predicates[rnd.nextInt(predicates.length)]+ " " +
-				objects[rnd.nextInt(objects.length)];*/
+				objects[rnd.nextInt(objects.length)];
 
 		return outText;
 	}
