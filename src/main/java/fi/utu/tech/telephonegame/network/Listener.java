@@ -1,13 +1,8 @@
 package fi.utu.tech.telephonegame.network;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.LinkedTransferQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TransferQueue;
-import java.io.Serializable;
 
 public class Listener implements Runnable {
 	int serverPort;

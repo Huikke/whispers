@@ -2,7 +2,6 @@ package fi.utu.tech.telephonegame;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TransferQueue;
 import fi.utu.tech.telephonegame.network.Network;
