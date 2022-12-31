@@ -32,7 +32,11 @@ public class IncomingFeed implements Runnable {
 				//kuuntele viestejä
 				Message message = (Message) inStream.readObject();
 				//aina kun saadaan viesti, kirjoitetaan se inQueue:een
-				inQueue.offer(message, 1, TimeUnit.SECONDS);
+				
+				//lukitaan inQueue kirjoituksen ajaksi, ettei kahta eri viestiä kirjoiteta inQueueen samaan aikaan
+				synchronized(inQueue) {
+					inQueue.offer(message, 1, TimeUnit.SECONDS);
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
