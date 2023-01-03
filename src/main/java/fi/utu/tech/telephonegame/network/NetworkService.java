@@ -5,7 +5,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TransferQueue;
@@ -19,7 +19,7 @@ public class NetworkService extends Thread implements Network {
 	private TransferQueue<Serializable> outQueue = new LinkedTransferQueue<Serializable>(); // For messages outgoing to network
 
 	// Lista outStreamia varten 
-	private ArrayList<ObjectOutputStream> outStreams = new ArrayList<>();
+	private CopyOnWriteArrayList<ObjectOutputStream> outStreams = new CopyOnWriteArrayList<>();
 	
 	/*
 	 * No need to change the construtor
